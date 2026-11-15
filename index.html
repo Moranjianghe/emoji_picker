@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172a35">
+  <meta name="description" content="搜尋、複製與收藏 A 島常用顏文字。支援繁體中文、簡體中文與英文搜尋。">
+  <title>顏文字小島 — A 島顏文字拾取器</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="masthead">
+      <a class="brand" href="#top" aria-label="顏文字小島首頁">
+        <span class="brand-mark" aria-hidden="true">☺</span>
+        <span>顏文字小島</span>
+      </a>
+      <span class="masthead-note">A 島常用表情收藏簿</span>
+    </header>
+
+    <section class="intro" id="top" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow">把心情，挑一句帶走</p>
+        <h1 id="page-title">今天想用哪個<br>顏文字？</h1>
+        <p class="intro-text">點一下就複製。輸入繁體、简体或 English 都找得到。</p>
+      </div>
+      <div class="island-doodle" aria-hidden="true">
+        <span class="sun">✳</span><span class="wave wave-one">〜〜</span>
+        <span class="wave wave-two">〜〜〜</span><span class="tiny-face">(・ω・)</span>
+      </div>
+    </section>
+
+    <section class="search-panel" aria-label="搜尋顏文字">
+      <label class="search-label" for="search-input">搜尋表情或心情</label>
+      <div class="search-field">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+        <input id="search-input" type="search" placeholder="試試：開心 / 开心 / happy" autocomplete="off" spellcheck="false">
+        <button class="clear-search" type="button" aria-label="清除搜尋" hidden>清除</button>
+      </div>
+      <div class="search-hints" aria-label="熱門搜尋">
+        <span>可以搜尋</span>
+        <button type="button" data-query="happy">happy</button>
+        <button type="button" data-query="哭">哭</button>
+        <button type="button" data-query="驚訝">驚訝</button>
+      </div>
+    </section>
+
+    <section class="recent-section" aria-labelledby="recent-title">
+      <div class="section-heading compact-heading">
+        <div><span class="section-kicker">最近用過</span><h2 id="recent-title">順手再拿一次</h2></div>
+        <button id="clear-recent" class="text-button" type="button" hidden>清空</button>
+      </div>
+      <div id="recent-list" class="emoji-grid recent-grid" aria-live="polite"></div>
+      <p id="recent-empty" class="recent-empty">複製過的顏文字會留在這裡。</p>
+    </section>
+
+    <section class="library-section" aria-labelledby="library-title">
+      <div class="section-heading library-heading">
+        <div><span class="section-kicker">A 島表情簿</span><h2 id="library-title">挑一個帶走</h2></div>
+        <span id="result-count" class="result-count" aria-live="polite"></span>
+      </div>
+      <div id="emoji-groups"></div>
+      <div id="empty-state" class="empty-state" hidden>
+        <span class="empty-face" aria-hidden="true">(・へ・)</span>
+        <p>沒有找到這個表情</p>
+        <span>換個寫法，或試試「happy」「哭」「驚訝」。</span>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <span>A 島顏文字拾取器 · 簡單找、輕鬆複製</span>
+      <a href="https://github.com/Moranjianghe/emoji_picker" target="_blank" rel="noreferrer">專案原始碼</a>
+    </footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>

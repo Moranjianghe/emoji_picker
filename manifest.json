@@ -1,0 +1,14 @@
+{
+  "name": "顏文字小島 — A 島顏文字拾取器",
+  "short_name": "顏文字小島",
+  "description": "支援繁體中文、簡體中文與英文搜尋的顏文字拾取器。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f3eb",
+  "theme_color": "#172a35",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
