@@ -51,9 +51,9 @@ let recent = readRecent();
 let activeCategory = 'smileys';
 let toastTimer;
 let searchIndex = new WeakMap();
-let expandedByCategory = new Map();
-let previousQuery = '';
-const DISPLAY_CHUNK = 180;
+let toneVariantsByBase = new Map();
+let activeToneMenu = null;
+let activeToneTrigger = null;
 
 function normalize(value) {
   return [...String(value).toLocaleLowerCase().normalize('NFKC')]
@@ -78,7 +78,7 @@ function makeTabs() {
     button.innerHTML = `<span aria-hidden="true">${category.icon}</span><span>${category.label}</span>`;
     button.addEventListener('click', () => {
       activeCategory = category.id;
-      expandedByCategory.clear();
+      closeToneMenu();
       makeTabs();
       renderLibrary();
     });
@@ -103,14 +103,86 @@ function searchableText(item, category) {
     category.id, ...categoryNames
   ].filter(Boolean).join(' '));
 }
+function baseEmoji(emoji) {
+  return emoji.replace(/[\u{1F3FB}-\u{1F3FF}]/gu, '');
+}
 function buildSearchIndex() {
   searchIndex = new WeakMap();
+  toneVariantsByBase = new Map();
   for (const category of categories) {
-    for (const item of category.items) searchIndex.set(item, searchableText(item, category));
+    category.baseItems = [];
+    for (const item of category.items) {
+      const base = baseEmoji(item[0]);
+      if (base === item[0]) category.baseItems.push(item);
+      else {
+        const variants = toneVariantsByBase.get(base) || [];
+        variants.push(item);
+        toneVariantsByBase.set(base, variants);
+      }
+    }
+  }
+  for (const category of categories) {
+    for (const item of category.baseItems) {
+      const variants = toneVariantsByBase.get(item[0]) || [];
+      const variantTerms = variants.map(variant => searchableText(variant, category)).join(' ');
+      searchIndex.set(item, `${searchableText(item, category)} ${variantTerms}`);
+    }
   }
 }
-function renderEmojiTile(item, category) {
+function closeToneMenu(restoreFocus = false) {
+  if (!activeToneMenu) return;
+  const trigger = activeToneTrigger;
+  activeToneMenu.remove();
+  activeToneMenu = null;
+  activeToneTrigger = null;
+  trigger?.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) trigger?.focus();
+}
+function openToneMenu(trigger, item, category) {
+  if (activeToneTrigger === trigger) {
+    closeToneMenu();
+    return;
+  }
+  closeToneMenu();
+  const { emoji, traditionalName, englishName } = emojiInfo(item);
+  const menu = document.createElement('div');
+  menu.className = 'tone-menu';
+  menu.setAttribute('role', 'group');
+  menu.setAttribute('aria-label', `${traditionalName} 膚色變體`);
+  const choices = [item, ...(toneVariantsByBase.get(emoji) || [])];
+  const seen = new Set();
+  for (const choice of choices) {
+    const variantEmoji = choice[0];
+    if (seen.has(variantEmoji)) continue;
+    seen.add(variantEmoji);
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'tone-option';
+    option.textContent = variantEmoji;
+    option.setAttribute('aria-label', `複製 ${variantEmoji} ${choice[3]} ${choice[1]}`);
+    option.title = `${choice[3]} · ${choice[1]}`;
+    option.addEventListener('click', () => {
+      closeToneMenu();
+      copyEmoji(variantEmoji);
+    });
+    menu.append(option);
+  }
+  document.body.append(menu);
+  const rect = trigger.getBoundingClientRect();
+  const left = Math.max(8, Math.min(window.innerWidth - menu.offsetWidth - 8, rect.left + rect.width / 2 - menu.offsetWidth / 2));
+  let top = rect.bottom + 5;
+  if (top + menu.offsetHeight > window.innerHeight - 8) top = Math.max(8, rect.top - menu.offsetHeight - 5);
+  menu.style.left = `${left}px`;
+  menu.style.top = `${top}px`;
+  trigger.setAttribute('aria-expanded', 'true');
+  activeToneMenu = menu;
+  activeToneTrigger = trigger;
+  menu.querySelector('button')?.focus();
+}
+function renderEmojiTile(item, category, withTonePicker = false) {
   const { emoji, englishName, simplifiedName, traditionalName } = emojiInfo(item);
+  const cell = document.createElement('div');
+  cell.className = 'emoji-cell';
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'emoji-tile';
@@ -119,7 +191,20 @@ function renderEmojiTile(item, category) {
   button.title = `${traditionalName} · ${englishName}`;
   button.dataset.category = category.id;
   button.addEventListener('click', () => copyEmoji(emoji));
-  return button;
+  cell.append(button);
+  if (withTonePicker && toneVariantsByBase.has(emoji)) {
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'tone-trigger';
+    trigger.textContent = '◐';
+    trigger.setAttribute('aria-label', `選擇 ${traditionalName} 膚色變體`);
+    trigger.setAttribute('aria-haspopup', 'true');
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.title = `膚色變體：${traditionalName} · ${englishName}`;
+    trigger.addEventListener('click', () => openToneMenu(trigger, item, category));
+    cell.append(trigger);
+  }
+  return cell;
 }
 function renderRecent() {
   const recentTiles = recent.map(emoji => {
@@ -135,19 +220,13 @@ function renderRecent() {
 }
 function renderLibrary() {
   const query = normalize(search.value);
-  if (query !== previousQuery) {
-    expandedByCategory.clear();
-    previousQuery = query;
-  }
   const visibleCategories = categories.filter(category => activeCategory === 'all' || activeCategory === category.id);
   groupsRoot.replaceChildren();
   let total = 0;
   for (const category of visibleCategories) {
-    const matches = category.items.filter(item => !query || searchIndex.get(item).includes(query));
+    const matches = category.baseItems.filter(item => !query || searchIndex.get(item).includes(query));
     if (!matches.length) continue;
     total += matches.length;
-    const limit = expandedByCategory.get(category.id) || DISPLAY_CHUNK;
-    const shown = matches.slice(0, limit);
     const section = document.createElement('section');
     section.className = 'group-section';
     const heading = document.createElement('h3');
@@ -159,19 +238,8 @@ function renderLibrary() {
     const grid = document.createElement('div');
     grid.className = 'emoji-grid library-grid';
     grid.setAttribute('aria-label', `${category.label} emoji`);
-    grid.append(...shown.map(item => renderEmojiTile(item, category)));
+    grid.append(...matches.map(item => renderEmojiTile(item, category, true)));
     section.append(heading, grid);
-    if (shown.length < matches.length) {
-      const more = document.createElement('button');
-      more.type = 'button';
-      more.className = 'load-more';
-      more.textContent = `顯示更多 · 還有 ${matches.length - shown.length} 個`;
-      more.addEventListener('click', () => {
-        expandedByCategory.set(category.id, Math.min(matches.length, limit + DISPLAY_CHUNK));
-        renderLibrary();
-      });
-      section.append(more);
-    }
     groupsRoot.append(section);
   }
   libraryTitle.textContent = query ? '搜尋結果' : activeCategory === 'all' ? '全部表情' : categories.find(category => category.id === activeCategory)?.label || '全部表情';
@@ -179,6 +247,14 @@ function renderLibrary() {
   emptyState.hidden = total !== 0;
   clearSearch.hidden = !search.value;
 }
+document.addEventListener('pointerdown', event => {
+  if (activeToneMenu && !activeToneMenu.contains(event.target) && !activeToneTrigger?.contains(event.target)) closeToneMenu();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && activeToneMenu) closeToneMenu(true);
+});
+window.addEventListener('resize', () => closeToneMenu());
+window.addEventListener('scroll', () => closeToneMenu(), true);
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add('is-visible');
@@ -209,14 +285,14 @@ async function copyEmoji(emoji) {
 }
 search.addEventListener('input', () => {
   activeCategory = search.value.trim() ? 'all' : 'smileys';
-  expandedByCategory.clear();
+  closeToneMenu();
   makeTabs();
   renderLibrary();
 });
 clearSearch.addEventListener('click', () => {
   search.value = '';
   activeCategory = 'smileys';
-  expandedByCategory.clear();
+  closeToneMenu();
   makeTabs();
   renderLibrary();
   search.focus();
@@ -224,6 +300,7 @@ clearSearch.addEventListener('click', () => {
 document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => {
   search.value = button.dataset.query;
   activeCategory = 'all';
+  closeToneMenu();
   makeTabs();
   renderLibrary();
   libraryTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
