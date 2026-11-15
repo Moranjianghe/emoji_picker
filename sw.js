@@ -1,5 +1,5 @@
-const CACHE_NAME = 'emoji-picker-v3';
-const APP_SHELL = ['./', './index.html', './style.css', './app.js', './kaomoji.json', './manifest.json', './icon.svg'];
+const CACHE_NAME = 'emoji-picker-v4';
+const APP_SHELL = ['./', './index.html', './style.css', './app.js', './emoji.json', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));

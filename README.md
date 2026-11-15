@@ -1,19 +1,19 @@
-# 顏文字小島 — A 島顏文字拾取器
+# 表情小島 — Emoji 拾取器
 
-一個輕巧的顏文字搜尋與複製工具，沿用 A 島拾取器的核心體驗，並以清楚的搜尋入口重新整理頁面。
+一個以 A 島顏文字拾取器為靈感、改為挑選標準 Unicode emoji 的輕量網頁工具。搜尋常用表情、點一下複製，最近使用的表情會留在本機。
 
 ## 功能
 
-- 點擊顏文字即可複製，並顯示複製狀態。
-- 儲存最近使用的 10 個顏文字，可隨時清空。
-- 搜尋支援繁體中文、簡體中文與英文心情關鍵字，例如「開心 / 开心 / happy」、「哭 / sad」、「驚訝 / surprised」。
+- 依笑臉、人物、動物、食物、旅遊、活動、物品、符號與旗幟瀏覽近 500 個常用 emoji。
+- 搜尋支援繁體中文、簡體中文與英文名稱／關鍵字，例如「開心 / 开心 / happy」、「愛心 / 爱心 / heart」、「食物 / food」。
+- 點擊 emoji 即可複製，最近使用清單會保留最近 18 個。
 - 支援 PWA 安裝與 Service Worker 離線使用。
 - 響應式版面、鍵盤操作與減少動態效果支援。
 - 不使用前端框架或第三方 JavaScript 套件。
 
 ## 本機執行
 
-以任一靜態伺服器提供此資料夾即可；需要透過 HTTP(S) 開啟才能載入顏文字 JSON 與註冊 Service Worker。
+以任一靜態伺服器提供此資料夾即可；需要透過 HTTP(S) 開啟才能載入 emoji JSON 與註冊 Service Worker。
 
 ```bash
 python3 -m http.server 8000
@@ -21,6 +21,6 @@ python3 -m http.server 8000
 
 接著開啟 `http://localhost:8000`。
 
-## 來源與授權
+## 授權與資料
 
-顏文字資料沿用 [A_Island_kaomoji_picker_web_page](https://github.com/Moranjianghe/A_Island_kaomoji_picker_web_page) 的 `kaomoji.json`，該專案以 MIT License 發布。顏文字本身的來源與權利依原專案說明，未必受程式碼授權涵蓋。
+程式碼依照 MIT License 發布。Emoji 由 Unicode 字元呈現；各平台的字形樣式會因作業系統與字型而不同。

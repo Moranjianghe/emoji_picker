@@ -1,7 +1,7 @@
 {
-  "name": "顏文字小島 — A 島顏文字拾取器",
-  "short_name": "顏文字小島",
-  "description": "支援繁體中文、簡體中文與英文搜尋的顏文字拾取器。",
+  "name": "表情小島 — Emoji 拾取器",
+  "short_name": "表情小島",
+  "description": "支援繁體中文、簡體中文與英文搜尋的 emoji 拾取器。",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
