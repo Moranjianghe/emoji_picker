@@ -67,6 +67,8 @@ h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.025em; }
 .group-title { display: flex; align-items: center; gap: 9px; margin: 0 0 7px; font-size: 13px; font-weight: 800; }
 .group-title small { color: var(--muted); font-size: 11px; font-weight: 500; }
 .library-grid { grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); }
+.load-more { display: block; margin: 7px auto 10px; padding: 7px 13px; border: 1px solid var(--pencil); border-radius: 7px; color: var(--blue); background: transparent; font-size: 12px; cursor: pointer; }
+.load-more:hover { border-color: var(--blue); background: var(--blue-soft); }
 .empty-state { display: flex; flex-direction: column; align-items: center; padding: 40px 12px 50px; color: var(--muted); text-align: center; }
 .empty-face { margin-bottom: 10px; font-size: 28px; }
 .empty-state p { margin: 0 0 5px; color: var(--ink); font-size: 15px; font-weight: 800; }

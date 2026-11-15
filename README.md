@@ -4,7 +4,7 @@
 
 ## 功能
 
-- 依笑臉、人物、動物、食物、旅遊、活動、物品、符號與旗幟瀏覽近 500 個常用 emoji。
+- 依 Unicode Emoji 17.0 標準瀏覽 **3,944 個完整合格 emoji 序列**，涵蓋笑臉、人物、膚色／性別／家庭組合、動物、食物、旅遊、活動、物品、符號與旗幟。
 - 搜尋支援繁體中文、簡體中文與英文名稱／關鍵字，例如「開心 / 开心 / happy」、「愛心 / 爱心 / heart」、「食物 / food」。
 - 點擊 emoji 即可複製，最近使用清單會保留最近 18 個。
 - 支援 PWA 安裝與 Service Worker 離線使用。
@@ -23,4 +23,4 @@ python3 -m http.server 8000
 
 ## 授權與資料
 
-程式碼依照 MIT License 發布。Emoji 由 Unicode 字元呈現；各平台的字形樣式會因作業系統與字型而不同。
+程式碼依照 MIT License 發布。`emoji.json` 使用 Unicode Emoji 17.0 的 fully-qualified emoji sequence 清單，並以 Unicode CLDR annotations 與 annotationsDerived 的英文、簡體中文及繁體中文名稱／關鍵字補足搜尋。資料來源與 Unicode License V3 通知見 [UNICODE-DATA-LICENSE.md](UNICODE-DATA-LICENSE.md)。各平台 emoji 字形會因作業系統與字型而不同。

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emoji-picker-v4';
+const CACHE_NAME = 'emoji-picker-v7';
 const APP_SHELL = ['./', './index.html', './style.css', './app.js', './emoji.json', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', event => {
